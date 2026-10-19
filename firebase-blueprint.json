@@ -1,0 +1,177 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile in A.X.O Chats with unique tag, bio, roles, and social media links.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string", "maxLength": 50 },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 50 },
+        "avatarUrl": { "type": "string" },
+        "bio": { "type": "string", "maxLength": 500 },
+        "statusMessage": { "type": "string", "maxLength": 100 },
+        "role": { "type": "string", "enum": ["admin", "semi-admin", "member"] },
+        "isVerified": { "type": "boolean" },
+        "isBanned": { "type": "boolean" },
+        "socialLinks": { "type": "object" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["id", "username", "displayName", "role"]
+    },
+    "Chat": {
+      "title": "Chat",
+      "description": "Direct or group chat room.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["direct", "group"] },
+        "name": { "type": "string", "maxLength": 150 },
+        "icon": { "type": "string" },
+        "description": { "type": "string", "maxLength": 500 },
+        "participantIds": { "type": "array" },
+        "adminIds": { "type": "array" },
+        "lastMessage": { "type": "object" },
+        "unreadCount": { "type": "object" },
+        "isPinned": { "type": "boolean" },
+        "isArchived": { "type": "boolean" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["id", "type", "participantIds", "createdAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Chat message including text, voice notes, photos, and reactions.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "chatId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string", "maxLength": 100 },
+        "senderAvatar": { "type": "string" },
+        "senderTag": { "type": "string", "maxLength": 50 },
+        "type": { "type": "string", "enum": ["text", "image", "video", "audio", "document", "system"] },
+        "text": { "type": "string", "maxLength": 5000 },
+        "mediaUrl": { "type": "string" },
+        "mediaCaption": { "type": "string", "maxLength": 500 },
+        "mediaDuration": { "type": "number" },
+        "timestamp": { "type": "number" },
+        "status": { "type": "string", "enum": ["sent", "delivered", "read"] },
+        "reactions": { "type": "object" },
+        "replyTo": { "type": "object" },
+        "isStarred": { "type": "boolean" }
+      },
+      "required": ["id", "chatId", "senderId", "type", "timestamp", "status"]
+    },
+    "Story": {
+      "title": "Story",
+      "description": "WhatsApp-style 24-hour status story with media or gradient text.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string", "maxLength": 100 },
+        "userAvatar": { "type": "string" },
+        "userTag": { "type": "string", "maxLength": 50 },
+        "mediaUrl": { "type": "string" },
+        "text": { "type": "string", "maxLength": 500 },
+        "background": { "type": "string" },
+        "caption": { "type": "string", "maxLength": 200 },
+        "timestamp": { "type": "number" },
+        "viewers": { "type": "array" }
+      },
+      "required": ["id", "userId", "timestamp"]
+    },
+    "CommunityChannel": {
+      "title": "CommunityChannel",
+      "description": "Official Telegram, Discord, WhatsApp, or Instagram channel posted by Admins.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "platform": { "type": "string", "enum": ["telegram", "discord", "whatsapp", "instagram", "youtube", "custom"] },
+        "link": { "type": "string", "maxLength": 1000 },
+        "iconUrl": { "type": "string" },
+        "category": { "type": "string", "maxLength": 100 },
+        "memberCount": { "type": "string", "maxLength": 100 },
+        "isPinned": { "type": "boolean" },
+        "isOfficial": { "type": "boolean" },
+        "addedBy": { "type": "string" },
+        "addedByRole": { "type": "string" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["id", "title", "platform", "link", "createdAt"]
+    },
+    "UserReport": {
+      "title": "UserReport",
+      "description": "Incident or moderation report dispatched to the Centralized Admin Dashboard.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "reporterId": { "type": "string" },
+        "reporterName": { "type": "string", "maxLength": 100 },
+        "reportedUserId": { "type": "string" },
+        "reportedUserName": { "type": "string", "maxLength": 100 },
+        "reason": { "type": "string", "maxLength": 300 },
+        "details": { "type": "string", "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["pending", "resolved", "dismissed"] },
+        "timestamp": { "type": "number" },
+        "evidenceMessageId": { "type": "string" }
+      },
+      "required": ["id", "reporterId", "reportedUserId", "reason", "status", "timestamp"]
+    },
+    "AdminSettings": {
+      "title": "AdminSettings",
+      "description": "Centralized administrator settings, broadcast banners, and security flags.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "announcementTitle": { "type": "string", "maxLength": 200 },
+        "announcementContent": { "type": "string", "maxLength": 1000 },
+        "isAnnouncementActive": { "type": "boolean" },
+        "maintenanceMode": { "type": "boolean" },
+        "allowPublicRegistrations": { "type": "boolean" },
+        "updatedAt": { "type": "number" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["id"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles and account settings"
+    },
+    "/chats/{chatId}": {
+      "schema": { "$ref": "#/entities/Chat" },
+      "description": "Direct and group conversation rooms"
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Messages inside conversation rooms"
+    },
+    "/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Real-time cross-device message sync"
+    },
+    "/stories/{storyId}": {
+      "schema": { "$ref": "#/entities/Story" },
+      "description": "24h status stories posted by users"
+    },
+    "/community_channels/{channelId}": {
+      "schema": { "$ref": "#/entities/CommunityChannel" },
+      "description": "Official community hub links posted by Admins"
+    },
+    "/reports/{reportId}": {
+      "schema": { "$ref": "#/entities/UserReport" },
+      "description": "User reports and moderation flags"
+    },
+    "/admin_settings/{settingId}": {
+      "schema": { "$ref": "#/entities/AdminSettings" },
+      "description": "Centralized admin configurations and settings"
+    }
+  }
+}

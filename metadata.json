@@ -1,0 +1,9 @@
+{
+  "name": "A.X.O-CHATS BY BOOGYMAN -AZHAN-DSP",
+  "description": "Next-generation chat and social hub with voice calls, video calls, WhatsApp-style stories, tag search, social profiles, and centralized Admin & Channel Hub by Boogyman Azhan DSP.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

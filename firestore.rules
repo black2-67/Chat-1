@@ -1,0 +1,94 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'abdullah89db@gmail.com' ||
+        request.auth.token.email == 'admin@axochats.app' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'semi-admin'])
+      );
+    }
+
+    // 1. Users collection
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // 2. Chats collection
+    match /chats/{chatId} {
+      allow read, write: if true;
+
+      // Messages sub-collection
+      match /messages/{messageId} {
+        allow read, write: if true;
+      }
+    }
+
+    // 2b. Top-level Messages collection for instant real-time sync across all devices
+    match /messages/{messageId} {
+      allow read, write: if true;
+    }
+
+    // Global collection-group query for messages
+    match /{path=**}/messages/{messageId} {
+      allow read, write: if true;
+    }
+
+    // 3. Status Stories (WhatsApp style)
+    match /stories/{storyId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true; // For updating viewers list
+      allow delete: if true;
+    }
+
+    // 4. Community Channels (Static Hub)
+    match /community_channels/{channelId} {
+      allow read: if true;
+      allow write: if true; // Managed by Owner and Admins
+    }
+
+    // 5. Incident & User Reports
+    match /reports/{reportId} {
+      allow create: if true;
+      allow read: if true;
+      allow update: if true;
+      allow delete: if isAdmin();
+    }
+
+    // 6. Centralized Admin Settings
+    match /admin_settings/{settingId} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}
